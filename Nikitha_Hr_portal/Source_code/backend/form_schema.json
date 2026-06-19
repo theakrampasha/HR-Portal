@@ -1,0 +1,36 @@
+{
+  "telephonic": {
+    "title": "Interview Assessment Form",
+    "subtitle": "Private & Confidential",
+    "topSections": [
+      { "key": "positionAppliedFor", "label": "Position Applied For", "type": "text", "width": "40%" },
+      { "key": "department", "label": "Department", "type": "text", "width": "40%" },
+      { "key": "location", "label": "Location", "type": "text", "width": "40%" }
+    ],
+    "personalInfoLabel": "Personal Information of Candidate",
+    "personalInfo": [
+      { "key": "name", "label": "Name of candidate", "type": "text" },
+      { "key": "dob", "label": "Date of Birth & Age", "type": "text" },
+      { "key": "qualification", "label": "Qualification", "type": "text" },
+      { "key": "yearOfPassing", "label": "Year of Passing", "type": "text" },
+      { "key": "presentlyWorkingWith", "label": "Presently working with", "type": "text" },
+      { "key": "designation", "label": "Designation", "type": "text" },
+      { "key": "previousFirm", "label": "Previous Firm", "type": "text" },
+      { "key": "prevDesignation", "label": "Designation", "type": "text" },
+      { "key": "experience", "label": "Overall Experience (In Years)", "type": "text" },
+      { "key": "relevantExperience", "label": "Relevant Experience for the post applied (In Years)", "type": "text" },
+      { "key": "currentSalary", "label": "Salary drawn in the previous/current employment", "type": "text" },
+      { "key": "expectedSalary", "label": "Expected Salary:", "type": "text" },
+      { "key": "specializations", "label": "Specializations If any (Computer/Software)", "type": "text" },
+      { "key": "address", "label": "Address:", "type": "textarea", "minHeight": "40px" },
+      { "key": "phone", "label": "Contact No.", "type": "text" },
+      { "key": "referredBy", "label": "Referred by:", "type": "text" },
+      { "key": "noticePeriod", "label": "Notice Period:", "type": "text" }
+    ],
+    "hrRemarksLabel": "1. Telephonic Interview remarks by HR",
+    "hrRemarks": [
+      { "key": "hrRemarks", "label": "", "type": "textarea", "minHeight": "60px" },
+      { "key": "hrSignature", "label": "Signature:", "type": "text", "placeholder": "Type Name" }
+    ]
+  }
+}

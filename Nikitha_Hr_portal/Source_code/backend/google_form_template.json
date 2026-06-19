@@ -1,0 +1,4 @@
+{
+    "subject": "Candidate Application Form",
+    "body": "Hello {name},\n\nGreetings from Nikitha Build Tech.\n\nPlease fill the Google Form using the link below:\n\nhttps://docs.google.com/forms/d/e/1FAIpQLSeRhD6kSVhk6a-M_p9s-F2sGxxccOFKi1AyCsHaZ6GyDHtqVg/viewform?usp=sharing&ouid=104693788224528044766\n\nPlease fill it within the date and time: {close_time}, otherwise it will be considered as rejected.\n\nBest Regards,\nHR Team\nNikitha Build Tech"
+}

@@ -1,0 +1,6 @@
+{
+    "interview_subject": "Interview Scheduled",
+    "interview_template": "Dear {name},\n\nGreetings from HR Team.\n\nWe are pleased to inform you  that yu have been shortlisted for the interview round at Nikita Build Tech Company through Bridge Rubik.\n\nInterview Details:\n\nCompany Name: Nikita Build Tech\nLocation: Brid ge Rubik Campus, Bengaluru\nInterview Date: {date}\nInterview Time: {time}\nReporting Time: 15 Minutes Earlier\n\nLocation Map:\nhttps://maps.google.com/?q=Bridge+Rubik+Bangalore\n\nPlease carry:\n\u2022 Updated Resume\n\u2022 Government ID Proof\n\u2022 Passport Size Photo\n\nKindly confirm your availability by replying to this email.\n\nWe wish you all the best for your interview.\n\nRegards,\nHR Team\nNikita Build Tech",
+    "reject_subject": "Application Update  From  Nikitha Build Tech",
+    "reject_template": "Dear {name},\n\nThank you for your interest in Nikitha Build Tech and for taking the time to participate in our interview process for the {role} position.\n\nAfter careful consideration, we regret to inform you that we will not be moving forward with your application at this time.\n\nWe appreciate your effort and wish you all the best in your future endeavors.\n\nRegards,\nHR Team\nNikitha Build Tech"
+}
