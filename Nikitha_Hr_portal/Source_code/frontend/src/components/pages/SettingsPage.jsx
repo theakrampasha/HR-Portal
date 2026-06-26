@@ -336,6 +336,44 @@ export default function SettingsPage() {
     }
   };
 
+  const handleSystemReset = async () => {
+    if (!window.confirm("Are you sure you want to delete all candidates, pipeline stages, reports, and clear browser cache? This cannot be undone.")) return;
+    try {
+      setLoading(true);
+      await API.post("/system/reset");
+      
+      try {
+        const savedJobs = JSON.parse(localStorage.getItem("jobs") || "[]");
+        savedJobs.forEach(job => {
+          localStorage.removeItem(`candidates_${job.id}`);
+          localStorage.removeItem(`reports_candidates_${job.id}`);
+          localStorage.removeItem(`reports_shortlisted_${job.id}`);
+          localStorage.removeItem(`shortlistedCandidates_${job.id}`);
+          localStorage.removeItem(`pipeline_${job.id}`);
+          localStorage.removeItem(`pipeline_decisions_${job.id}`);
+          localStorage.removeItem(`pipeline_tab_${job.id}`);
+          localStorage.removeItem(`pipeline_f2f_mode_${job.id}`);
+        });
+      } catch (err_ls) {
+        console.error(err_ls);
+      }
+      
+      localStorage.removeItem("jobs");
+      localStorage.removeItem("activeJob");
+      localStorage.removeItem("activeJobId");
+      localStorage.removeItem("hiredHistory");
+      
+      toast.success("System successfully reset! Reloading...");
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    } catch (err) {
+      toast.error("Failed to reset system: " + (err.response?.data?.detail || err.message));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const mailLocked = !editMailTemplates;
 
   return (
@@ -354,6 +392,7 @@ export default function SettingsPage() {
           <a href="#templates" className="sp-hero-pill">Templates</a>
           <a href="#google" className="sp-hero-pill">Google Form</a>
           <a href="#offers" className="sp-hero-pill">Offer letters</a>
+          <a href="#danger" className="sp-hero-pill" style={{ color: "#ef4444" }}>Danger Zone</a>
         </nav>
       </header>
 
@@ -665,6 +704,31 @@ export default function SettingsPage() {
             )}
           </Panel>
         </div>
+      </SectionGroup>
+
+      {/* ── Danger Zone ── */}
+      <SectionGroup id="danger" title="Danger Zone" subtitle="Reset application data, databases, and browser cache.">
+        <Panel
+          icon="⚠️"
+          title="Reset Application Data"
+          desc="This will delete all candidates, pipeline stages, analytics, reports, and clear browser local cache."
+          accent="#dc2626"
+          footer={
+            <button
+              type="button"
+              className="btn-primary"
+              style={{ background: "#dc2626", border: "none", color: "#fff", padding: "10px 20px", borderRadius: "10px", fontWeight: "bold", cursor: "pointer" }}
+              onClick={handleSystemReset}
+              disabled={loading}
+            >
+              {loading ? "Resetting..." : "Reset System & Clear Cache"}
+            </button>
+          }
+        >
+          <p style={{ color: "#dc2626", fontSize: "13px", fontWeight: "600", margin: 0 }}>
+            Warning: This action is irreversible. All candidates, hiring pipeline history, reports, and uploaded resume files will be permanently deleted. Your email templates and SMTP settings will be preserved.
+          </p>
+        </Panel>
       </SectionGroup>
 
     </div>

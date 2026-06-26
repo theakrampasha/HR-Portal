@@ -4,6 +4,7 @@ import os
 import io
 import pdfplumber
 from docx import Document
+from datetime import datetime
 
 from app.services.resume_parser import extract_text
 from app.services.scoring import calculate_score
@@ -83,7 +84,8 @@ async def upload_resumes(
             "email": "not_found",
             "phone": "not_found",
             "score": score,
-            "status": "pending"
+            "status": "pending",
+            "created_at": datetime.now().isoformat()
         })
 
     # =========================

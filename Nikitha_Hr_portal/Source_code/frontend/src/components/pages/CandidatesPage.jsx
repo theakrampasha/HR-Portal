@@ -226,6 +226,7 @@ const stored = JSON.parse(
     );
     setShortlistedCandidates(filtered);
     localStorage.setItem(`shortlistedCandidates_${activeJob}`,JSON.stringify(filtered));
+    localStorage.setItem(`reports_shortlisted_${activeJob}`, JSON.stringify(filtered));
     setShowATSModal(false);
     toast.success(`${filtered.length} candidates shortlisted`);
   };
@@ -265,16 +266,45 @@ const stored = JSON.parse(
   // FULL RESET — clears everything
   // =========================================
   const handleFullReset = () => {
+    // Clear active job keys
     localStorage.removeItem(`candidateBatch_${activeJob}`);
     localStorage.removeItem(`shortlistedCandidates_${activeJob}`);
+    localStorage.removeItem(`reports_candidates_${activeJob}`);
+    localStorage.removeItem(`reports_shortlisted_${activeJob}`);
     localStorage.removeItem(`closeTime_${activeJob}`);
     localStorage.removeItem(`googleFormCompleted_${activeJob}`);
     localStorage.removeItem(`candidates_${activeJob}`);
     localStorage.removeItem(`selectedCandidates_${activeJob}`);
     localStorage.removeItem(`pipeline_${activeJob}`);
 
-    API.post("/reset-batch").catch(() => { });
+    // Clear candidates, shortlist, and pipeline of ALL jobs
+    try {
+      const savedJobs = JSON.parse(localStorage.getItem("jobs") || "[]");
+      savedJobs.forEach(job => {
+        localStorage.removeItem(`candidates_${job.id}`);
+        localStorage.removeItem(`reports_candidates_${job.id}`);
+        localStorage.removeItem(`reports_shortlisted_${job.id}`);
+        localStorage.removeItem(`shortlistedCandidates_${job.id}`);
+        localStorage.removeItem(`selectedCandidates_${job.id}`);
+        localStorage.removeItem(`pipeline_${job.id}`);
+        localStorage.removeItem(`pipeline_decisions_${job.id}`);
+        localStorage.removeItem(`pipeline_tab_${job.id}`);
+        localStorage.removeItem(`pipeline_f2f_mode_${job.id}`);
+        localStorage.removeItem(`closeTime_${job.id}`);
+        localStorage.removeItem(`googleFormCompleted_${job.id}`);
+        localStorage.removeItem(`candidateBatch_${job.id}`);
+      });
+    } catch (e) {
+      console.error("Error clearing job keys:", e);
+    }
 
+    // Clear main jobs lists and current job selection
+    localStorage.removeItem("jobs");
+    localStorage.removeItem("activeJobId");
+    localStorage.removeItem("activeJob");
+    localStorage.removeItem("hiredHistory");
+
+    // Reset local component states
     setCandidates([]);
     setShortlistedCandidates([]);
     setGoogleCandidates([]);
@@ -637,9 +667,27 @@ const stored = JSON.parse(
       <div className="glass-card">
 
         {/* HEADER */}
-        <div className="hero mb-4">
-          <h1>👥 Candidates Dashboard</h1>
-          <p className="text-muted">AI ATS Recruitment System</p>
+        <div className="hero mb-4" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
+          <div>
+            <h1>👥 Candidates Dashboard</h1>
+            <p className="text-muted">AI ATS Recruitment System</p>
+          </div>
+          <button
+            className="btn-outline"
+            style={{ borderColor: "#ef4444", color: "#ef4444", padding: "8px 16px", borderRadius: "10px", fontWeight: "700" }}
+            onClick={async () => {
+              if (window.confirm("Are you sure you want to delete all candidates, reset the database, and clear all uploads? This cannot be undone.")) {
+                await API.post("/reset-batch").catch(() => { });
+                handleFullReset();
+                toast.success("System reset successfully! Redirecting...");
+                setTimeout(() => {
+                  window.location.href = "/";
+                }, 1000);
+              }
+            }}
+          >
+            🗑️ Reset System Data
+          </button>
         </div>
 
         {/* TIMER BANNER */}

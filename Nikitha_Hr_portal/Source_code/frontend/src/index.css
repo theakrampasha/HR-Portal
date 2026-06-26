@@ -618,3 +618,20 @@ body {
     gap: 16px;
   }
 }
+
+/* Premium Dark Auth Button */
+.auth-button-dark {
+  background: #4169e1 !important;
+  box-shadow: 0 8px 20px rgba(65, 105, 225, 0.25) !important;
+  color: #ffffff !important;
+}
+
+.auth-button-dark:hover:not(:disabled) {
+  background: #3154b5 !important;
+  box-shadow: 0 12px 24px rgba(65, 105, 225, 0.35) !important;
+}
+
+.auth-button-dark::before {
+  background-color: #27408b !important;
+}
+

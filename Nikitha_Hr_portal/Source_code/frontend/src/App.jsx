@@ -15,6 +15,14 @@ import LoginPage from "./components/LoginPage";
 import SignUpPage from "./components/SignUpPage";
 
 function App() {
+  // Check for reset query parameter to clear localStorage
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("reset") === "true") {
+    localStorage.clear();
+    window.location.href = window.location.origin;
+    return null;
+  }
+
   const [isAuthenticated, setIsAuthenticated] = useState(() => !!localStorage.getItem("token"));
   const [authView, setAuthView] = useState("login");
   const [showStartupModal, setShowStartupModal] = useState(() => {

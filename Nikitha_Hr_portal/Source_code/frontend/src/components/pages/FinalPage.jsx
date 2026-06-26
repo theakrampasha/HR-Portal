@@ -666,7 +666,8 @@ export default function FinalPage() {
               roleType: "Full-Time", 
               months: "", 
               status: "selected",
-              formData: JSON.stringify(forms)
+              formData: JSON.stringify(forms),
+              jobName: activeJobName
             };
           }) 
         });

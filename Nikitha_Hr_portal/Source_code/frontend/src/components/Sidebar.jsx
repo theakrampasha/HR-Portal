@@ -116,7 +116,12 @@ export default function Sidebar({ mobileOpen, onClose }) {
           style={styles.logoutButton}
           className="sidebar-logout-btn"
         >
-          <span>🚪</span> Logout
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span>Logout</span>
         </button>
       </div>
 
@@ -178,16 +183,18 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     gap: "8px",
-    padding: "10px 16px",
-    borderRadius: "12px",
-    background: "rgba(239, 68, 68, 0.1)",
-    border: "1px solid rgba(239, 68, 68, 0.2)",
-    color: "#fca5a5",
-    fontWeight: "600",
-    fontSize: "13px",
+    padding: "10px 20px",
+    borderRadius: "100px",
+    background: "#ef4444",
+    border: "none",
+    color: "#ffffff",
+    fontWeight: "700",
+    fontSize: "15px",
+    letterSpacing: "0.3px",
     cursor: "pointer",
-    transition: "all 0.3s",
+    transition: "all 0.2s ease",
     width: "100%",
+    boxShadow: "0 4px 6px -1px rgba(239, 68, 68, 0.4), 0 2px 4px -1px rgba(239, 68, 68, 0.2)",
   }
 };
 
@@ -196,10 +203,13 @@ if (typeof document !== "undefined" && !document.getElementById("sidebar-extra-s
   style.id = "sidebar-extra-styles";
   style.innerHTML = `
     .sidebar-logout-btn:hover {
-      background: rgba(239, 68, 68, 0.2) !important;
-      color: #ffffff !important;
-      border-color: rgba(239, 68, 68, 0.4) !important;
-      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+      background: #dc2626 !important;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px -2px rgba(220, 38, 38, 0.5), 0 3px 6px -2px rgba(220, 38, 38, 0.3) !important;
+    }
+    .sidebar-logout-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 4px -1px rgba(220, 38, 38, 0.4) !important;
     }
   `;
   document.head.appendChild(style);

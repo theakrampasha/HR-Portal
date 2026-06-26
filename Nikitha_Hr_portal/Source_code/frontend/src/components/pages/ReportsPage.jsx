@@ -33,7 +33,7 @@ const SVGDonutChart = ({ value, total, label, color = "#10b981", secondaryColor 
             r={radius}
             fill="transparent"
             stroke={secondaryColor}
-            strokeWidth="9"
+            strokeWidth="10"
             className="donut-segment-hoverable"
           >
             <title>{`Rejected: ${total - value} (${total > 0 ? ((total - value) / total * 100).toFixed(0) : 0}%)`}</title>
@@ -45,7 +45,7 @@ const SVGDonutChart = ({ value, total, label, color = "#10b981", secondaryColor 
             r={radius}
             fill="transparent"
             stroke={color}
-            strokeWidth="9"
+            strokeWidth="10"
             strokeDasharray={circumference}
             strokeDashoffset={strokeDashoffset}
             strokeLinecap="round"
@@ -67,9 +67,11 @@ const SVGDonutChart = ({ value, total, label, color = "#10b981", secondaryColor 
           <span style={{ fontSize: "22px", fontWeight: "900", color: "#0f172a" }}>
             {percentage.toFixed(0)}%
           </span>
-          <span style={{ fontSize: "9px", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px", marginTop: "2px" }}>
-            {label} ({value})
-          </span>
+          {label && (
+            <span style={{ fontSize: "9px", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px", marginTop: "2px" }}>
+              {label} ({value})
+            </span>
+          )}
         </div>
       </div>
     </div>
@@ -82,12 +84,13 @@ const SVGDonutChart = ({ value, total, label, color = "#10b981", secondaryColor 
 const ResumesBarChart = ({ data }) => {
   const maxCount = Math.max(...data.map(d => d.count), 5);
   const chartHeight = 150;
-  const chartWidth = 320;
+  const chartWidth = Math.max(320, data.length * 40 + 50);
   const paddingBottom = 25;
   const paddingLeft = 30;
 
   return (
-    <svg viewBox={`0 0 ${chartWidth} ${chartHeight + paddingBottom}`} style={{ width: "100%", height: "100%" }}>
+    <div className="custom-scrollbar" style={{ width: "100%", height: "100%", overflowX: "auto", overflowY: "hidden" }}>
+      <svg viewBox={`0 0 ${chartWidth} ${chartHeight + paddingBottom}`} style={{ minWidth: `${chartWidth}px`, width: "100%", height: "100%" }}>
       {/* Grid lines */}
       {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
         const y = chartHeight * (1 - ratio);
@@ -136,9 +139,9 @@ const ResumesBarChart = ({ data }) => {
 
       {/* Bars */}
       {data.map((item, idx) => {
-        const barWidth = 24;
         const spacing = (chartWidth - paddingLeft - 20) / Math.max(data.length, 1);
-        const x = paddingLeft + 10 + idx * spacing;
+        const barWidth = Math.max(8, Math.min(12, spacing * 0.15));
+        const x = paddingLeft + 10 + idx * spacing + (spacing - barWidth) / 2;
         const height = maxCount > 0 ? (item.count / maxCount) * chartHeight : 0;
         const y = chartHeight - height;
 
@@ -149,7 +152,7 @@ const ResumesBarChart = ({ data }) => {
               y={y}
               width={barWidth}
               height={Math.max(height, 2)}
-              rx="4"
+              rx="3"
               fill="url(#blueGradient)"
               className="chart-hoverable"
             >
@@ -189,6 +192,7 @@ const ResumesBarChart = ({ data }) => {
         </linearGradient>
       </defs>
     </svg>
+    </div>
   );
 };
 
@@ -196,14 +200,15 @@ const ResumesBarChart = ({ data }) => {
 // CUSTOM SVG GROUPED BAR CHART
 // ==========================================
 const GroupedBarChart = ({ data }) => {
-  const maxVal = Math.max(...data.flatMap(d => [d.total, d.shortlisted, d.rejected]), 5);
+  const maxVal = Math.max(...data.flatMap(d => [d.total, d.shortlisted, d.selected || 0, d.rejected]), 5);
   const chartHeight = 150;
-  const chartWidth = 320;
+  const chartWidth = Math.max(320, data.length * 70 + 50);
   const paddingBottom = 25;
   const paddingLeft = 30;
 
   return (
-    <svg viewBox={`0 0 ${chartWidth} ${chartHeight + paddingBottom}`} style={{ width: "100%", height: "100%" }}>
+    <div className="custom-scrollbar" style={{ width: "100%", height: "100%", overflowX: "auto", overflowY: "hidden" }}>
+      <svg viewBox={`0 0 ${chartWidth} ${chartHeight + paddingBottom}`} style={{ minWidth: `${chartWidth}px`, width: "100%", height: "100%" }}>
       {/* Grid lines */}
       {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
         const y = chartHeight * (1 - ratio);
@@ -244,24 +249,26 @@ const GroupedBarChart = ({ data }) => {
 
       {/* Grouped Bars */}
       {data.map((item, idx) => {
-        const groupSpacing = (chartWidth - paddingLeft) / Math.max(data.length, 1);
-        const groupX = paddingLeft + idx * groupSpacing;
-        const barWidth = 8;
-        const spacingBetweenBars = 3;
+        const groupSpacing = (chartWidth - paddingLeft - 20) / Math.max(data.length, 1);
+        const barWidth = Math.max(8, Math.min(13, groupSpacing * 0.15));
+        const spacingBetweenBars = Math.max(2, Math.round(barWidth * 0.25));
+        const groupWidth = 4 * barWidth + 3 * spacingBetweenBars;
+        const groupX = paddingLeft + 10 + idx * groupSpacing + (groupSpacing - groupWidth) / 2;
 
         const totalH = maxVal > 0 ? (item.total / maxVal) * chartHeight : 0;
         const shortH = maxVal > 0 ? (item.shortlisted / maxVal) * chartHeight : 0;
+        const selectH = maxVal > 0 ? ((item.selected || 0) / maxVal) * chartHeight : 0;
         const rejectH = maxVal > 0 ? (item.rejected / maxVal) * chartHeight : 0;
 
         return (
           <g key={idx}>
             {/* Total bar */}
             <rect
-              x={groupX + 8}
+              x={groupX}
               y={chartHeight - totalH}
               width={barWidth}
               height={Math.max(totalH, 1)}
-              rx="2"
+              rx="2.5"
               fill="#3b82f6"
               className="chart-hoverable"
             >
@@ -269,23 +276,35 @@ const GroupedBarChart = ({ data }) => {
             </rect>
             {/* Shortlisted bar */}
             <rect
-              x={groupX + 8 + barWidth + spacingBetweenBars}
+              x={groupX + barWidth + spacingBetweenBars}
               y={chartHeight - shortH}
               width={barWidth}
               height={Math.max(shortH, 1)}
-              rx="2"
+              rx="2.5"
               fill="#10b981"
               className="chart-hoverable"
             >
               <title>{`Shortlisted: ${item.shortlisted}`}</title>
             </rect>
+            {/* Selected bar */}
+            <rect
+              x={groupX + 2 * (barWidth + spacingBetweenBars)}
+              y={chartHeight - selectH}
+              width={barWidth}
+              height={Math.max(selectH, 1)}
+              rx="2.5"
+              fill="#059669"
+              className="chart-hoverable"
+            >
+              <title>{`Selected: ${item.selected || 0}`}</title>
+            </rect>
             {/* Rejected bar */}
             <rect
-              x={groupX + 8 + 2 * (barWidth + spacingBetweenBars)}
+              x={groupX + 3 * (barWidth + spacingBetweenBars)}
               y={chartHeight - rejectH}
               width={barWidth}
               height={Math.max(rejectH, 1)}
-              rx="2"
+              rx="2.5"
               fill="#ef4444"
               className="chart-hoverable"
             >
@@ -293,7 +312,7 @@ const GroupedBarChart = ({ data }) => {
             </rect>
 
             <text
-              x={groupX + 8 + (3 * barWidth + 2 * spacingBetweenBars) / 2}
+              x={groupX + groupWidth / 2}
               y={chartHeight + 16}
               fontSize="10"
               fontWeight="800"
@@ -306,6 +325,7 @@ const GroupedBarChart = ({ data }) => {
         );
       })}
     </svg>
+    </div>
   );
 };
 
@@ -315,14 +335,16 @@ const GroupedBarChart = ({ data }) => {
 const SourcingTrendChart = ({ data }) => {
   const maxVal = Math.max(...data.map(d => d.count), 5);
   const chartHeight = 150;
-  const chartWidth = 320;
+  const chartWidth = Math.max(320, data.length * 45 + 50);
   const paddingBottom = 25;
   const paddingLeft = 30;
 
   // Calculate coordinates
   const points = data.map((item, idx) => {
-    const spacing = (chartWidth - paddingLeft - 20) / Math.max(data.length - 1, 1);
-    const x = paddingLeft + 10 + idx * spacing;
+    const spacing = (chartWidth - paddingLeft - 20) / Math.max(data.length, 1);
+    const x = data.length === 1 
+      ? paddingLeft + 10 + spacing / 2 
+      : paddingLeft + 10 + idx * ((chartWidth - paddingLeft - 20) / (data.length - 1));
     const y = maxVal > 0 ? chartHeight - (item.count / maxVal) * chartHeight : chartHeight;
     return { x, y, label: item.label, count: item.count };
   });
@@ -332,7 +354,8 @@ const SourcingTrendChart = ({ data }) => {
     : "";
 
   return (
-    <svg viewBox={`0 0 ${chartWidth} ${chartHeight + paddingBottom}`} style={{ width: "100%", height: "100%" }}>
+    <div className="custom-scrollbar" style={{ width: "100%", height: "100%", overflowX: "auto", overflowY: "hidden" }}>
+      <svg viewBox={`0 0 ${chartWidth} ${chartHeight + paddingBottom}`} style={{ minWidth: `${chartWidth}px`, width: "100%", height: "100%" }}>
       {/* Grid lines */}
       {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
         const y = chartHeight * (1 - ratio);
@@ -392,7 +415,7 @@ const SourcingTrendChart = ({ data }) => {
             r="5"
             fill="#ffffff"
             stroke="#3b82f6"
-            strokeWidth="3.5"
+            strokeWidth="3"
             className="chart-hoverable"
           >
             <title>{`${p.label}: ${p.count} Resumes`}</title>
@@ -410,7 +433,7 @@ const SourcingTrendChart = ({ data }) => {
           {p.count > 0 && (
             <text
               x={p.x}
-              y={p.y - 10}
+              y={p.y - 12}
               fontSize="10"
               fontWeight="900"
               fill="#1e293b"
@@ -422,7 +445,49 @@ const SourcingTrendChart = ({ data }) => {
         </g>
       ))}
     </svg>
+    </div>
   );
+};
+
+const reachedStage = (c, stage) => {
+  const stageOrder = ["telephonic", "telephonic_tech", "f2f_schedule", "f2f", "final_interview", "negotiation"];
+  let currentStageIdx = -1;
+
+  if (c.status === "selected" || c.status === "hired") {
+    currentStageIdx = 5; // Passed all stages
+  } else if (c.stage && stageOrder.includes(c.stage)) {
+    currentStageIdx = stageOrder.indexOf(c.stage);
+  } else if (c.status === "rejected") {
+    const rejStage = c.rejectedAtStage || c.rejected_round || c.stage || "";
+    const rejStageClean = rejStage.toLowerCase().trim();
+    if (rejStageClean) {
+      let rejectedIdx = stageOrder.findIndex(s => rejStageClean.includes(s.split('_')[0]));
+      if (rejectedIdx === -1) {
+         if (rejStageClean.includes("tech")) rejectedIdx = 1;
+         else if (rejStageClean.includes("final")) rejectedIdx = 4;
+         else if (rejStageClean.includes("negotiation")) rejectedIdx = 5;
+      }
+      currentStageIdx = rejectedIdx;
+    }
+  }
+
+  if (stage === "screened") return true;
+  if (stage === "form_sent") return c.status !== "pending";
+  if (stage === "form_filled") {
+    // If they explicitly filled the form, or reached any interview/final stage, they must have filled it
+    if (c.form_filled) return true;
+    if (c.status === "selected" || c.status === "hired" || c.status === "rejected") return true;
+    if (currentStageIdx >= 0) return true;
+    return false;
+  }
+  
+  if (stage === "telephonic") return currentStageIdx >= 0;
+  if (stage === "telephonic_tech") return currentStageIdx >= 1;
+  if (stage === "f2f") return currentStageIdx >= 3;
+  if (stage === "final_interview") return currentStageIdx >= 4;
+  if (stage === "negotiation") return currentStageIdx >= 5;
+  
+  return false;
 };
 
 // ==========================================
@@ -442,7 +507,9 @@ export default function ReportsPage() {
   const [rolesList, setRolesList] = useState(["All Roles"]);
   const [selectedKpiFilter, setSelectedKpiFilter] = useState("Total Uploads");
 
-
+  // AI Insights State
+  const [aiAnalysis, setAiAnalysis] = useState(null);
+  const [loadingAi, setLoadingAi] = useState(false);
 
   const printRef = useRef(null);
   const tableRef = useRef(null);
@@ -453,6 +520,112 @@ export default function ReportsPage() {
       tableRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
   };
+
+  const getLocalReportFallback = useCallback((role, list) => {
+    const total = list.length;
+    const shortlisted = list.filter(c => c.status !== "pending").length;
+    const ratio = total > 0 ? ((shortlisted / total) * 100).toFixed(1) : 0;
+    const avgScore = total > 0 ? (list.reduce((acc, c) => acc + parseFloat(c.score || 0), 0) / total).toFixed(1) : 0;
+    const sent = list.filter(c => reachedStage(c, "form_sent")).length;
+    const completed = list.filter(c => reachedStage(c, "form_filled")).length;
+    const responseRate = sent > 0 ? ((completed / sent) * 100).toFixed(1) : 0;
+
+    const insights = [
+      `Analyzed ${total} candidate profiles for the ${role} job role with a shortlist ratio of ${ratio}%.`,
+      `Average ATS assessment score is registered at ${avgScore}% for this batch.`,
+      `Google Form onboarding completed responses are at ${responseRate}% (${completed}/${sent} candidates completed).`,
+      total > 5 
+        ? "Candidates display strong structural domain knowledge but lag in secondary digital tool adoption." 
+        : "Candidate pool is relatively small; recommend broadening sourcing channels."
+    ];
+
+    const recommendations = [
+      `Enhance initial outreach channels specific to ${role} qualifications.`,
+      `Adjust ATS screening filters if average scores fall below the target range.`,
+      `Follow up with the ${sent - completed} pending candidates who haven't completed their Google Form.`,
+      `Ensure key skills like AutoCAD/SolidWorks are verified early in technical interviews.`
+    ];
+
+    return { insights, recommendations };
+  }, []);
+
+  const fetchAiAnalysis = useCallback(async (role, list) => {
+    if (!list || list.length === 0) {
+      setAiAnalysis(null);
+      return;
+    }
+
+    try {
+      setLoadingAi(true);
+      
+      const total = list.length;
+      const shortlisted = list.filter(c => c.status !== "pending").length;
+      const hired = list.filter(c => c.status === "selected" || c.status === "hired").length;
+      const rejected = list.filter(c => c.status === "rejected").length;
+      const ratio = total > 0 ? ((shortlisted / total) * 100) : 0;
+      const avgScore = total > 0 ? (list.reduce((acc, c) => acc + parseFloat(c.score || 0), 0) / total) : 0;
+      const highestScore = total > 0 ? Math.max(...list.map(c => parseFloat(c.score || 0))) : 0;
+      
+      const sent = list.filter(c => reachedStage(c, "form_sent")).length;
+      const completed = list.filter(c => reachedStage(c, "form_filled")).length;
+      const responseRate = sent > 0 ? ((completed / sent) * 100) : 0;
+
+      const getRejCount = (stgMatch) => list.filter(c => {
+        if (c.status !== "rejected") return false;
+        const rejStr = (c.rejectedAtStage || c.rejected_round || c.stage || "").toLowerCase();
+        return rejStr.includes(stgMatch);
+      }).length;
+
+      const stagesObj = {
+        telephonic: { started: list.filter(c => reachedStage(c, "telephonic")).length, passed: list.filter(c => reachedStage(c, "telephonic_tech")).length, rejected: getRejCount("telephonic") },
+        telephonic_tech: { started: list.filter(c => reachedStage(c, "telephonic_tech")).length, passed: list.filter(c => reachedStage(c, "f2f")).length, rejected: getRejCount("tech") },
+        f2f: { started: list.filter(c => reachedStage(c, "f2f")).length, passed: list.filter(c => reachedStage(c, "final_interview")).length, rejected: getRejCount("f2f") }
+      };
+
+      const allSkills = {};
+      list.forEach(c => {
+        (c.matched_skills || []).forEach(s => { allSkills[s] = (allSkills[s] || 0) + 1; });
+      });
+      const topSkills = Object.keys(allSkills).sort((a, b) => allSkills[b] - allSkills[a]).slice(0, 3);
+      
+      const missingSkillsMap = {};
+      list.forEach(c => {
+        (c.missing_skills || []).forEach(s => { missingSkillsMap[s] = (missingSkillsMap[s] || 0) + 1; });
+      });
+      const missingSkills = Object.keys(missingSkillsMap).sort((a, b) => missingSkillsMap[b] - missingSkillsMap[a]).slice(0, 3);
+
+      const payload = {
+        job_role: role,
+        total_uploaded: total,
+        shortlisted: shortlisted,
+        hired_count: hired,
+        rejected_count: rejected,
+        shortlist_ratio: parseFloat(ratio.toFixed(2)),
+        avg_ats_score: parseFloat(avgScore.toFixed(2)),
+        highest_ats_score: parseFloat(highestScore.toFixed(2)),
+        google_form_sent: sent,
+        google_form_filled: completed,
+        google_form_response_rate: parseFloat(responseRate.toFixed(2)),
+        stages: stagesObj,
+        top_skills: topSkills,
+        missing_skills: missingSkills
+      };
+
+      const res = await API.post("/reports/analyze", payload);
+      setAiAnalysis(res.data);
+    } catch (err) {
+      console.warn("AI analysis API failed, using fallback:", err);
+      const fallback = getLocalReportFallback(role, list);
+      setAiAnalysis(fallback);
+    } finally {
+      setLoadingAi(false);
+    }
+  }, [getLocalReportFallback]);
+
+  // Effect to trigger AI Insights
+  useEffect(() => {
+    fetchAiAnalysis(selectedRole, filteredCandidates);
+  }, [selectedRole, candidates, fetchAiAnalysis]);
 
   // Fetch both active (in-memory) and historical (db) candidate records
   const loadData = useCallback(async (start, end) => {
@@ -469,38 +642,50 @@ export default function ReportsPage() {
       const dbList = candidatesRes.data.candidates || [];
       const activeList = activeRes.data || [];
       const rawReports = reportsRes.data.reports || [];
-      setReportsData(rawReports);
 
-      // Merge candidates by email
+      // Merge candidates by email and job role
       const merged = new Map();
 
       dbList.forEach(c => {
-        merged.set(c.email.toLowerCase().trim(), {
+        const emailKey = c.email.toLowerCase().trim();
+        const roleKey = (c.job_role || "Full Stack Developer").toLowerCase().trim();
+        merged.set(`${emailKey}_${roleKey}`, {
           name: c.name,
           email: c.email,
           job_role: c.job_role || "Full Stack Developer",
           score: c.score || c.ats_score || 0,
           status: c.status,
-          created_at: c.created_at || new Date().toISOString()
+          created_at: c.created_at || new Date().toISOString(),
+          form_filled: !!c.form_filled,
+          stage: c.stage || null,
+          rejected_round: c.rejected_round || null,
+          matched_skills: c.matched_skills || [],
+          missing_skills: c.missing_skills || []
         });
       });
 
       // 1. Fallback: merge backend active list
       activeList.forEach(c => {
         const emailKey = c.email.toLowerCase().trim();
+        const roleKey = (c.job_role || "Full Stack Developer").toLowerCase().trim();
+        const fullKey = `${emailKey}_${roleKey}`;
         let status = c.status || "pending";
         if (status === "ai-selected") status = "shortlisted";
 
         const score = c.ats_score || c.score || 0;
 
-        if (!merged.has(emailKey) || (merged.get(emailKey).status !== "selected" && merged.get(emailKey).status !== "rejected")) {
-          merged.set(emailKey, {
+        if (!merged.has(fullKey) || (merged.get(fullKey).status !== "selected" && merged.get(fullKey).status !== "rejected")) {
+          merged.set(fullKey, {
             name: c.name,
             email: c.email,
             job_role: c.job_role || "Full Stack Developer",
             score: score,
             status: status,
-            created_at: c.created_at || new Date().toISOString()
+            created_at: c.created_at || new Date().toISOString(),
+            form_filled: !!c.form_filled,
+            stage: c.stage || null,
+            matched_skills: c.matched_skills || [],
+            missing_skills: c.missing_skills || []
           });
         }
       });
@@ -509,7 +694,8 @@ export default function ReportsPage() {
       try {
         const savedJobs = JSON.parse(localStorage.getItem("jobs") || "[]");
         savedJobs.forEach(job => {
-          const parsed = JSON.parse(localStorage.getItem(`candidates_${job.id}`) || "[]");
+          const parsed = JSON.parse(localStorage.getItem(`reports_candidates_${job.id}`) || localStorage.getItem(`candidates_${job.id}`) || "[]");
+          const shortlisted = JSON.parse(localStorage.getItem(`reports_shortlisted_${job.id}`) || localStorage.getItem(`shortlistedCandidates_${job.id}`) || "[]");
           const pipelineData = JSON.parse(localStorage.getItem(`pipeline_${job.id}`) || "{}");
           const pipelineCandidates = pipelineData.candidates || [];
 
@@ -525,7 +711,25 @@ export default function ReportsPage() {
                 job_role: job.name,
                 score: c.score || c.ats_score || 0,
                 status: "pending",
-                created_at: c.created_at || new Date().toISOString()
+                created_at: c.created_at || new Date().toISOString(),
+                matched_skills: c.matched_skills || [],
+                missing_skills: c.missing_skills || []
+              });
+            }
+          });
+
+          shortlisted.forEach(c => {
+            const emailKey = (c.email || "").toLowerCase().trim();
+            if (emailKey) {
+              jobCandidatesMap.set(emailKey, {
+                name: c.name,
+                email: c.email,
+                job_role: job.name,
+                score: c.score || c.ats_score || 0,
+                status: "shortlisted",
+                created_at: c.created_at || new Date().toISOString(),
+                matched_skills: c.matched_skills || [],
+                missing_skills: c.missing_skills || []
               });
             }
           });
@@ -543,15 +747,28 @@ export default function ReportsPage() {
                 job_role: job.name,
                 score: c.score || c.ats_score || 0,
                 status: status,
-                created_at: c.created_at || new Date().toISOString()
+                created_at: c.created_at || new Date().toISOString(),
+                form_filled: !!c.form_filled,
+                stage: c.stage || null,
+                rejected_round: c.rejected_round || null,
+                matched_skills: c.matched_skills || [],
+                missing_skills: c.missing_skills || []
               });
             }
           });
 
           // Overlay into merged Map
           jobCandidatesMap.forEach((c, emailKey) => {
-            if (!merged.has(emailKey) || (merged.get(emailKey).status !== "selected" && merged.get(emailKey).status !== "rejected")) {
-              merged.set(emailKey, c);
+            const roleKey = (c.job_role || "Full Stack Developer").toLowerCase().trim();
+            const fullKey = `${emailKey}_${roleKey}`;
+            
+            if (!merged.has(fullKey) || (merged.get(fullKey).status !== "selected" && merged.get(fullKey).status !== "rejected")) {
+              const existing = merged.get(fullKey);
+              const formFilledStatus = (existing && existing.form_filled) || c.form_filled;
+              merged.set(fullKey, {
+                ...c,
+                form_filled: formFilledStatus
+              });
             }
           });
         });
@@ -560,9 +777,10 @@ export default function ReportsPage() {
       }
 
       const list = Array.from(merged.values());
-      setCandidates(list);
 
-      // Extract unique roles list
+      setCandidates(list);
+      setReportsData(rawReports);
+      
       const roles = new Set(["All Roles"]);
       list.forEach(c => {
         if (c.job_role) roles.add(c.job_role);
@@ -570,8 +788,11 @@ export default function ReportsPage() {
       setRolesList(Array.from(roles));
 
     } catch (err) {
-      console.error("Failed to load reports:", err);
-      setError("Failed to fetch recruitment analytical metrics.");
+      console.error("Failed to load reports from backend:", err);
+      toast.error("Failed to load reports from backend");
+      setCandidates([]);
+      setReportsData([]);
+      setRolesList(["All Roles"]);
     } finally {
       setLoading(false);
     }
@@ -610,8 +831,10 @@ export default function ReportsPage() {
   // Apply filters on candidates
   const filteredCandidates = candidates.filter(c => {
     // 1. Role Filter
-    if (selectedRole !== "All Roles" && c.job_role !== selectedRole) {
-      return false;
+    if (selectedRole !== "All Roles") {
+      const r1 = (c.job_role || "").toLowerCase().trim();
+      const r2 = (selectedRole || "").toLowerCase().trim();
+      if (r1 !== r2) return false;
     }
     // 2. Custom Date Filter
     if (startDate && endDate) {
@@ -623,32 +846,96 @@ export default function ReportsPage() {
     return true;
   });
 
-  // Calculate funnel metrics dynamically
-  const totalUploads = filteredCandidates.length;
-  const shortlistedCount = filteredCandidates.filter(c => c.status === "shortlisted").length;
-  const selectedCount = filteredCandidates.filter(c => c.status === "selected" || c.status === "hired").length;
-  const rejectedCount = filteredCandidates.filter(c => c.status === "rejected").length;
-  const pendingCount = filteredCandidates.filter(c => c.status === "pending").length;
+  // Calculate cumulative funnel metrics from DB/reportsData
+  let dbTotalUploads = 0;
+  let dbFormSent = 0;
+  let dbFormFilled = 0;
 
-  // Google Form Sent vs Filled stats
-  let formSent = 0;
-  let formFilled = 0;
   if (selectedRole === "All Roles") {
     reportsData.forEach(r => {
-      formSent += r.google_form_sent || 0;
-      formFilled += r.google_form_filled || 0;
+      dbTotalUploads += r.total_uploaded || 0;
+      dbFormSent += r.google_form_sent || 0;
+      dbFormFilled += r.google_form_filled || 0;
     });
   } else {
     const rData = reportsData.find(r => r.job_role.toLowerCase().trim() === selectedRole.toLowerCase().trim());
     if (rData) {
-      formSent = rData.google_form_sent || 0;
-      formFilled = rData.google_form_filled || 0;
-    } else {
-      // Fallback calculation from filtered candidates
-      formSent = filteredCandidates.filter(c => c.status !== "pending").length;
-      formFilled = filteredCandidates.filter(c => c.status === "shortlisted" || c.status === "selected" || c.status === "rejected").length;
+      dbTotalUploads = rData.total_uploaded || 0;
+      dbFormSent = rData.google_form_sent || 0;
+      dbFormFilled = rData.google_form_filled || 0;
     }
   }
+
+  // Filter candidates for charts and bottom table based on clicked KPI card
+  const candidatesForTable = filteredCandidates.filter(c => {
+    const cleanFilter = selectedKpiFilter.toLowerCase();
+    if (cleanFilter === "total uploads" || cleanFilter === "resumes screened") return true;
+    if (cleanFilter === "shortlisted") return c.status !== "pending";
+    if (cleanFilter === "selected") return c.status === "selected" || c.status === "hired";
+    if (cleanFilter === "rejected") return c.status === "rejected";
+    if (cleanFilter === "pending") return c.status === "pending";
+    if (cleanFilter === "form filled" || cleanFilter === "google form filled") return reachedStage(c, "form_filled");
+    if (cleanFilter === "google form sent") return reachedStage(c, "form_sent");
+    if (cleanFilter === "telephonic screening") return reachedStage(c, "telephonic");
+    if (cleanFilter === "telephonic tech") return reachedStage(c, "telephonic_tech");
+    if (cleanFilter === "face to face") return reachedStage(c, "f2f");
+    if (cleanFilter === "final round") return reachedStage(c, "final_interview");
+    if (cleanFilter === "negotiation and offer letter") return reachedStage(c, "negotiation");
+    if (cleanFilter === "shortlist ratio") return c.status !== "pending";
+    if (cleanFilter === "avg ats score" || cleanFilter === "highest score") return true;
+    return true;
+  });
+
+  // Sort candidates by score descending if we are looking at Avg ATS Score or Highest Score
+  if (selectedKpiFilter === "Avg ATS Score" || selectedKpiFilter === "Highest Score") {
+    candidatesForTable.sort((a, b) => parseFloat(b.score || 0) - parseFloat(a.score || 0));
+  }
+
+  // Donut chart stats (always show overall stats from filteredCandidates to match KPI cards)
+  const donutValue = filteredCandidates.filter(c => c.status !== "pending" && c.status !== "rejected").length;
+  const donutRejected = filteredCandidates.filter(c => c.status === "rejected").length;
+  const donutTotal = donutValue + donutRejected;
+
+  // Dynamic stage counts for charts (respecting KPI filter)
+  const chartResumesScreenedCount = candidatesForTable.length;
+  const chartFormSentCount = candidatesForTable.filter(c => reachedStage(c, "form_sent")).length;
+  const chartFormFilledCount = candidatesForTable.filter(c => reachedStage(c, "form_filled")).length;
+  const chartTelephonicCount = candidatesForTable.filter(c => reachedStage(c, "telephonic")).length;
+  const chartTelephonicTechCount = candidatesForTable.filter(c => reachedStage(c, "telephonic_tech")).length;
+  const chartF2fCount = candidatesForTable.filter(c => reachedStage(c, "f2f")).length;
+  const chartFinalRoundCount = candidatesForTable.filter(c => reachedStage(c, "final_interview")).length;
+  const chartNegotiationCount = candidatesForTable.filter(c => reachedStage(c, "negotiation")).length;
+
+  const chartFormFilled = chartFormFilledCount;
+  let chartFormSent = chartFormSentCount;
+  if (chartFormFilled > chartFormSent) {
+    chartFormSent = chartFormFilled;
+  }
+
+  // Active / fallback stats from state
+  const activeTotal = filteredCandidates.length;
+  const activePending = filteredCandidates.filter(c => c.status === "pending").length;
+  const activeShortlisted = filteredCandidates.filter(c => c.status !== "pending").length;
+  const activeSelected = filteredCandidates.filter(c => c.status === "selected" || c.status === "hired").length;
+  const activeRejected = filteredCandidates.filter(c => c.status === "rejected").length;
+
+  const selectedCount = activeSelected;
+  const rejectedCount = activeRejected;
+  const pendingCount = activePending;
+
+  const totalUploads = activeTotal;
+  const shortlistedCount = activeShortlisted;
+
+  // Dynamic stage counts
+  const resumesScreenedCount = filteredCandidates.length;
+  const formSentCount = filteredCandidates.filter(c => reachedStage(c, "form_sent")).length;
+  const formFilledCount = filteredCandidates.filter(c => reachedStage(c, "form_filled")).length;
+  const telephonicCount = filteredCandidates.filter(c => reachedStage(c, "telephonic")).length;
+  const telephonicTechCount = filteredCandidates.filter(c => reachedStage(c, "telephonic_tech")).length;
+  const f2fCount = filteredCandidates.filter(c => reachedStage(c, "f2f")).length;
+
+  const formFilled = formFilledCount;
+  let formSent = formSentCount;
 
   // Ensure logical validation: forms completed/filled should not exceed forms sent
   if (formFilled > formSent) {
@@ -656,7 +943,7 @@ export default function ReportsPage() {
   }
 
   // Ensure consistent ratios
-  const shortlistRatio = totalUploads > 0 ? Math.round(((shortlistedCount + selectedCount) / totalUploads) * 100) : 0;
+  const shortlistRatio = totalUploads > 0 ? Math.round((shortlistedCount / totalUploads) * 100) : 0;
   const avgATS = filteredCandidates.length > 0 ? (filteredCandidates.reduce((acc, c) => acc + parseFloat(c.score || 0), 0) / filteredCandidates.length).toFixed(2) : "0.00";
   const highestATS = filteredCandidates.length > 0 ? Math.max(...filteredCandidates.map(c => parseFloat(c.score || 0))).toFixed(2) : "0.00";
 
@@ -684,14 +971,25 @@ export default function ReportsPage() {
       toast.error("No records available to export");
       return;
     }
-    const headers = ["Candidate Name", "Job Role", "Resume Score", "Status", "Upload Date"];
-    const rows = filteredCandidates.map(c => [
-      c.name,
-      c.job_role,
-      `${c.score}%`,
-      c.status.toUpperCase(),
-      c.created_at.split("T")[0]
-    ]);
+    
+    const escapeCSV = (val) => `"${String(val || '').replace(/"/g, '""')}"`;
+    const headers = ["Candidate Name", "Job Role", "Resume Score", "Status", "Upload Date"].map(escapeCSV);
+    
+    const rows = filteredCandidates.map(c => {
+      const d = new Date(c.created_at);
+      const dateStr = !isNaN(d) 
+        ? d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-')
+        : (c.created_at ? c.created_at.split("T")[0] : "N/A");
+        
+      return [
+        escapeCSV(c.name),
+        escapeCSV(c.job_role),
+        escapeCSV(`${c.score}%`),
+        escapeCSV(c.status.toUpperCase()),
+        escapeCSV(dateStr)
+      ];
+    });
+
     const csvContent = "data:text/csv;charset=utf-8," 
       + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
     const encodedUri = encodeURI(csvContent);
@@ -704,7 +1002,7 @@ export default function ReportsPage() {
     toast.success("Exported report as CSV!");
   };
 
-  // Prepare chart datasets based on filtered candidates
+  // Prepare chart datasets based on filtered candidates (overall data)
   const uploadsByDay = (() => {
     const days = {};
     filteredCandidates.forEach(c => {
@@ -723,11 +1021,14 @@ export default function ReportsPage() {
     filteredCandidates.forEach(c => {
       const role = c.job_role || "Unknown";
       if (!roles[role]) {
-        roles[role] = { total: 0, shortlisted: 0, rejected: 0 };
+        roles[role] = { total: 0, shortlisted: 0, rejected: 0, selected: 0 };
       }
       roles[role].total += 1;
-      if (c.status === "shortlisted" || c.status === "selected") {
+      if (c.status !== "pending") {
         roles[role].shortlisted += 1;
+      }
+      if (c.status === "selected" || c.status === "hired") {
+        roles[role].selected += 1;
       }
       if (c.status === "rejected") {
         roles[role].rejected += 1;
@@ -737,6 +1038,7 @@ export default function ReportsPage() {
       label: r.length > 10 ? `${r.slice(0, 10)}.` : r,
       total: roles[r].total,
       shortlisted: roles[r].shortlisted,
+      selected: roles[r].selected,
       rejected: roles[r].rejected
     }));
   })();
@@ -744,14 +1046,14 @@ export default function ReportsPage() {
   // Role wise Table
   const roleWiseSummary = (() => {
     const roles = {};
-    filteredCandidates.forEach(c => {
+    candidatesForTable.forEach(c => {
       const role = c.job_role || "Unknown";
       if (!roles[role]) {
         roles[role] = { total: 0, shortlisted: 0, totalScore: 0 };
       }
       roles[role].total += 1;
       roles[role].totalScore += parseFloat(c.score || 0);
-      if (c.status === "shortlisted" || c.status === "selected") {
+      if (c.status !== "pending") {
         roles[role].shortlisted += 1;
       }
     });
@@ -763,32 +1065,26 @@ export default function ReportsPage() {
     }));
   })();
 
-  const topCandidates = [...filteredCandidates]
+  const topCandidates = [...candidatesForTable]
     .sort((a, b) => parseFloat(b.score) - parseFloat(a.score))
     .slice(0, 5);
 
-  // Filter candidates for bottom table based on clicked KPI card
-  const candidatesForTable = filteredCandidates.filter(c => {
-    const cleanFilter = selectedKpiFilter.toLowerCase();
-    if (cleanFilter === "total uploads") return true;
-    if (cleanFilter === "shortlisted") return c.status === "shortlisted";
-    if (cleanFilter === "selected") return c.status === "selected" || c.status === "hired";
-    if (cleanFilter === "rejected") return c.status === "rejected";
-    if (cleanFilter === "pending") return c.status === "pending";
-    if (cleanFilter === "form filled") return c.status !== "pending";
-    if (cleanFilter === "shortlist ratio") return c.status === "shortlisted" || c.status === "selected" || c.status === "hired";
-    if (cleanFilter === "avg ats score" || cleanFilter === "highest score") return true;
-    return true;
-  });
 
-  // Sort candidates by score descending if we are looking at Avg ATS Score or Highest Score
-  if (selectedKpiFilter === "Avg ATS Score" || selectedKpiFilter === "Highest Score") {
-    candidatesForTable.sort((a, b) => parseFloat(b.score || 0) - parseFloat(a.score || 0));
-  }
 
   return (
     <div style={{ padding: "0 24px 40px 24px", color: "#1e293b", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       <style>{`
+        .charts-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 25px;
+          margin-bottom: 30px;
+        }
+        @media (max-width: 1024px) {
+          .charts-grid {
+            grid-template-columns: 1fr;
+          }
+        }
         .chart-hoverable {
           cursor: pointer;
           transition: all 0.2s ease-in-out;
@@ -802,7 +1098,7 @@ export default function ReportsPage() {
           transition: all 0.2s ease-in-out;
         }
         .donut-segment-hoverable:hover {
-          stroke-width: 12px;
+          stroke-width: 13px;
         }
         @keyframes draw-beam {
           0% {
@@ -859,6 +1155,20 @@ export default function ReportsPage() {
         .loading-dot {
           animation: dot-flash 1.4s infinite linear;
         }
+        .custom-scrollbar::-webkit-scrollbar {
+          height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
       `}</style>
       
       {/* TITLE BAR & EXPORT ACTIONS */}
@@ -885,6 +1195,7 @@ export default function ReportsPage() {
           </button>
         </div>
       </div>
+
 
       {/* FILTER PANEL */}
       <div style={{
@@ -1103,8 +1414,9 @@ export default function ReportsPage() {
             })}
           </div>
 
+
           {/* CHARTS GRID */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "25px", marginBottom: "30px" }}>
+          <div className="charts-grid">
             
             {/* Chart 1: Donut */}
             <div className="glass-card" style={{ background: "#ffffff", padding: "24px", borderRadius: "24px", border: "1px solid #e2e8f0" }}>
@@ -1113,8 +1425,8 @@ export default function ReportsPage() {
               </h3>
               <div style={{ height: "160px" }}>
                 <SVGDonutChart
-                  value={shortlistedCount + selectedCount}
-                  total={totalUploads}
+                  value={donutValue}
+                  total={donutTotal}
                   label="Shortlisted"
                   color="#10b981"
                   secondaryColor="#ef4444"
@@ -1134,7 +1446,7 @@ export default function ReportsPage() {
                     boxShadow: "0 2px 5px rgba(0,0,0,0.05)"
                   }}
                 >
-                  Shortlisted: {shortlistedCount + selectedCount}
+                  Shortlisted: {donutValue}
                 </motion.button>
                 <motion.button
                   onClick={() => handleKpiClick("Rejected")}
@@ -1149,7 +1461,7 @@ export default function ReportsPage() {
                     boxShadow: "0 2px 5px rgba(0,0,0,0.05)"
                   }}
                 >
-                  Rejected: {rejectedCount}
+                  Rejected: {donutRejected}
                 </motion.button>
               </div>
             </div>
@@ -1195,21 +1507,41 @@ export default function ReportsPage() {
                 Candidate Pipeline Distribution Bar Chart
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-                {[
-                  { label: "Resumes Screened", count: totalUploads, color: "#6366f1" },
-                  { label: "Google Form Sent", count: formSent, color: "#0ea5e9" },
-                  { label: "Google Form Filled", count: formFilled, color: "#8b5cf6" },
-                  { label: "Telephonic Screening", count: shortlistedCount + selectedCount, color: "#cbd5e1" },
-                  { label: "Telephonic Tech", count: selectedCount, color: "#cbd5e1" },
-                  { label: "Face to Face", count: selectedCount, color: "#cbd5e1" }
+                 {[
+                  { label: "Resumes Screened", count: chartResumesScreenedCount, color: "#6366f1" },
+                  { label: "Google Form Sent", count: chartFormSentCount, color: "#0ea5e9" },
+                  { label: "Google Form Filled", count: chartFormFilledCount, color: "#8b5cf6" },
+                  { label: "Telephonic Screening", count: chartTelephonicCount, color: "#7c3aed" },
+                  { label: "Telephonic Tech", count: chartTelephonicTechCount, color: "#0369a1" },
+                  { label: "Face to Face", count: chartF2fCount, color: "#047857" },
+                  { label: "Final Round", count: chartFinalRoundCount, color: "#d97706" },
+                  { label: "Negotiation and Offer Letter", count: chartNegotiationCount, color: "#be123c" },
+                  { label: "Selected", count: activeSelected, color: "#10b981" }
                 ].map((item, idx) => {
-                  const maxCount = Math.max(totalUploads, 1);
+                  const maxCount = Math.max(chartResumesScreenedCount, 1);
                   const widthPct = (item.count / maxCount) * 100;
+                  const isSelected = selectedKpiFilter === item.label;
                   return (
-                    <div key={idx} style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                      <div style={{ width: "140px", textAlign: "right", fontSize: "12px", fontWeight: "800", color: "#475569" }}>{item.label}</div>
-                      <div style={{ flex: 1, height: "24px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0", overflow: "hidden", position: "relative" }}>
-                        <div style={{ height: "100%", width: `${widthPct}%`, background: item.color, borderRadius: "6px" }} />
+                    <div 
+                      key={idx} 
+                      onClick={() => handleKpiClick(item.label)}
+                      style={{ 
+                        display: "flex", 
+                        alignItems: "center", 
+                        gap: "16px",
+                        cursor: "pointer",
+                        padding: "6px 12px",
+                        borderRadius: "12px",
+                        background: isSelected ? "rgba(59, 130, 246, 0.06)" : "transparent",
+                        border: isSelected ? "1.5px solid rgba(59, 130, 246, 0.25)" : "1.5px solid transparent",
+                        boxShadow: isSelected ? "0 4px 12px rgba(59, 130, 246, 0.05)" : "none",
+                        transition: "all 0.2s ease-in-out"
+                      }}
+                      className="chart-hoverable"
+                    >
+                      <div style={{ width: "140px", textAlign: "right", fontSize: "12.5px", fontWeight: "800", color: "#475569" }}>{item.label}</div>
+                      <div style={{ flex: 1, height: "26px", background: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0", overflow: "hidden", position: "relative" }}>
+                        <div style={{ height: "100%", width: `${widthPct}%`, background: item.color, borderRadius: "6px", transition: "width 0.8s ease-out" }} />
                         <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", fontSize: "10.5px", fontWeight: "900", color: widthPct > 20 ? "#ffffff" : "#475569" }}>
                           {item.count} candidates
                         </span>
@@ -1227,17 +1559,16 @@ export default function ReportsPage() {
               </h3>
               <div style={{ display: "flex", justifyContent: "center", margin: "20px 0" }}>
                 <SVGDonutChart
-                  value={formFilled}
-                  total={formSent}
-                  label="Response Completion"
+                  value={chartFormFilled}
+                  total={chartFormSent}
                   color="#2563eb"
                   secondaryColor="#cbd5e1"
                 />
               </div>
               <div style={{ borderTop: "1px solid #f1f5f9", paddingTop: "14px", display: "flex", flexDirection: "column", gap: "8px", fontSize: "12.5px", fontWeight: "750" }}>
-                <div className="flex-between"><span style={{ color: "#64748b" }}>Forms Sent:</span><span>{formSent}</span></div>
-                <div className="flex-between"><span style={{ color: "#64748b" }}>Forms Completed:</span><span style={{ color: "#059669" }}>{formFilled}</span></div>
-                <div className="flex-between"><span style={{ color: "#64748b" }}>No Responses:</span><span style={{ color: "#ef4444" }}>{formSent - formFilled}</span></div>
+                <div className="flex-between"><span style={{ color: "#64748b" }}>Forms Sent:</span><span>{chartFormSent}</span></div>
+                <div className="flex-between"><span style={{ color: "#64748b" }}>Forms Completed:</span><span style={{ color: "#059669" }}>{chartFormFilled}</span></div>
+                <div className="flex-between"><span style={{ color: "#64748b" }}>No Responses:</span><span style={{ color: "#ef4444" }}>{chartFormSent - chartFormFilled}</span></div>
               </div>
             </div>
 
@@ -1434,9 +1765,9 @@ export default function ReportsPage() {
               </tr>
               <tr>
                 <td style={{ border: "1px solid #000", padding: "6px", fontSize: "11px" }}>Shortlisted &amp; Scheduled</td>
-                <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center", fontSize: "11px" }}>{shortlistedCount + selectedCount}</td>
+                <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center", fontSize: "11px" }}>{shortlistedCount}</td>
                 <td style={{ border: "1px solid #000", padding: "6px", textAlign: "center", fontSize: "11px" }}>
-                  {totalUploads > 0 ? (((shortlistedCount + selectedCount) / totalUploads) * 100).toFixed(0) : 0}%
+                  {totalUploads > 0 ? ((shortlistedCount / totalUploads) * 100).toFixed(0) : 0}%
                 </td>
               </tr>
               <tr style={{ fontWeight: "bold", backgroundColor: "#e8f8f5" }}>

@@ -79,18 +79,14 @@ function SignUpPage({ onSwitchToLogin }) {
           zIndex: 10
         }}>
           <div style={{
-            width: '80px',
-            height: '80px',
-            borderRadius: '50%',
-            backgroundColor: '#ffffff',
+            width: '110px',
+            height: '110px',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-            border: '1px solid rgba(226, 232, 240, 0.8)',
             overflow: 'hidden'
           }}>
-            <img src="/logo.png?v=2" alt="Nikitha Logo" style={{ width: '92%', height: '92%', objectFit: 'contain' }} />
+            <img src="/logo.png?v=2" alt="Nikitha Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', mixBlendMode: 'multiply' }} />
           </div>
         </div>
         <Illustration onChairClick={handleChairClick} activeView="signup" />

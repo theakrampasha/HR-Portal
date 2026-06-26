@@ -28,10 +28,10 @@ def update_funnel_stats(req: FunnelStatsRequest):
             updates = []
             params = []
             if req.total_uploaded is not None:
-                updates.append("total_uploaded = total_uploaded + %s")
+                updates.append("total_uploaded = %s")
                 params.append(req.total_uploaded)
             if req.google_form_sent is not None:
-                updates.append("google_form_sent = google_form_sent + %s")
+                updates.append("google_form_sent = %s")
                 params.append(req.google_form_sent)
             if req.google_form_filled is not None:
                 updates.append("google_form_filled = %s")
@@ -365,6 +365,7 @@ def get_reports_candidates(start_date: Optional[str] = None, end_date: Optional[
                 "job_role": row["job_role"],
                 "score": ats_score,
                 "status": "rejected",
+                "rejected_round": row["rejected_round"],
                 "created_at": row["created_at"].isoformat() if row["created_at"] else None,
                 "matched_skills": matched_skills
             })

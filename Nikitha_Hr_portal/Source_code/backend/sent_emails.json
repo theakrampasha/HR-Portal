@@ -1,11 +1,26 @@
 {
     "emails": [
-        "akrampasha4786@gmail.com"
+        "akrampasha4786@gmail.com",
+        "krishnamsrao@gmail.com",
+        "prabhubhat@yahoo.com",
+        "manimaranh9965@gmail.com"
     ],
     "candidates": [
         {
             "name": "Akram Pasha",
             "email": "akrampasha4786@gmail.com"
+        },
+        {
+            "name": "Krishna Madhusudana Rao",
+            "email": "krishnamsrao@gmail.com"
+        },
+        {
+            "name": "Prabhakar G Bhat",
+            "email": "prabhubhat@yahoo.com"
+        },
+        {
+            "name": "Manimaran P",
+            "email": "manimaranh9965@gmail.com"
         }
     ]
 }

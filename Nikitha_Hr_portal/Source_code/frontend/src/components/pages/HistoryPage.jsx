@@ -832,10 +832,13 @@ export default function HistoryPage() {
     document.title = originalTitle;
   };
 
-  // Extract unique domains (job roles)
+  // Extract unique domains (job roles) and include predefined defaults
+  const defaultDomains = ["java Developeer", "General Manager", "Civil Engineer", "Trainee Software Engineer"];
+  const fetchedDomains = Array.from(new Set(history.map((c) => c.job_role || "Unspecified Role")));
+  
   const domains = [
     "All",
-    ...Array.from(new Set(history.map((c) => c.job_role || "Unspecified Role"))),
+    ...new Set([...defaultDomains, ...fetchedDomains])
   ];
 
   const filtered = history.filter((c) => {
@@ -903,7 +906,7 @@ export default function HistoryPage() {
       if (c.status === "hired") {
         return "passed";
       }
-      const rejRound = (c.rejected_round || "").trim().toLowerCase();
+      const rejRound = (c.rejectedAtStage || c.rejected_round || c.stage || "").trim().toLowerCase();
       
       const STAGE_TITLE_TO_ID = {
         "telephonic": "telephonic",

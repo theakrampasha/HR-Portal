@@ -36,6 +36,7 @@ class OfferCandidate(BaseModel):
     joiningDate: str
     status:      str = "selected"
     formData:    Optional[str] = ""
+    jobName:     Optional[str] = ""
 
 class OfferRequest(BaseModel):
     candidates: List[OfferCandidate]
@@ -217,7 +218,7 @@ def send_offer_letter(req: OfferRequest, x_user_email: str = Header(None)):
                 save_candidate_to_history({
                     "name": c.name,
                     "email": c.email,
-                    "job_role": c.jobRole,
+                    "job_role": c.jobName if c.jobName else c.jobRole,
                     "job_type": c.roleType,
                     "salary": c.salary,
                     "joining_date": c.joiningDate,

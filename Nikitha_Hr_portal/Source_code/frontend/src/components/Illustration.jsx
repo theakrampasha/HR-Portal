@@ -129,40 +129,43 @@ function Illustration({ onChairClick, activeView }) {
           {/* Right leg */}
           <path d="M152 400 L156 518" stroke="#0a0f1d" strokeWidth="16" strokeLinecap="round" />
           
-          {/* Red/Brown Boots */}
+          {/* Black Formal Shoes */}
           {/* Left shoe */}
-          <path d="M112 516 L96 518 L90 527 L90 535 L116 535 L116 516 Z" fill="#b45309" />
-          <path d="M88 531 H118 V535 H88 Z" fill="#ffffff" />
-          <circle cx="92" cy="529" r="4" fill="#ffffff" />
+          <path d="M112 516 L96 518 L90 527 L90 535 L116 535 L116 516 Z" fill="#0a0f1d" />
+          <path d="M88 531 H118 V535 H88 Z" fill="#1e293b" />
 
           {/* Right shoe */}
-          <path d="M156 516 L156 535 L180 535 L180 527 L174 518 L160 516 Z" fill="#b45309" />
-          <path d="M154 531 H182 V535 H154 Z" fill="#ffffff" />
-          <circle cx="178" cy="529" r="4" fill="#ffffff" />
+          <path d="M156 516 L156 535 L180 535 L180 527 L174 518 L160 516 Z" fill="#0a0f1d" />
+          <path d="M154 531 H182 V535 H154 Z" fill="#1e293b" />
 
           {/* Pants overlay */}
           <path d="M112 390 L162 390 L164 480 L146 480 L144 430 L130 430 L128 480 L110 480 Z" fill="#1e293b" />
 
-          {/* Torso & Shirt */}
-          <path d="M116 288 L158 288 L170 395 L104 395 Z" fill="#00bbf9" />
-          <path d="M131 288 L137 312 L143 288" fill="#0096c7" />
+          {/* Torso & Suit Jacket */}
+          <path d="M116 288 L158 288 L170 395 L104 395 Z" fill="#0f172a" />
+          <path d="M130 288 L137 340 L144 288" fill="#ffffff" />
           {/* Tie */}
-          <path d="M136 295 L138 295 L141 370 L137 378 L133 370 Z" fill="#f72585" />
-          {/* Pocket */}
-          <rect x="116" y="315" width="14" height="18" fill="#0096c7" rx="2" />
-          <line x1="116" y1="315" x2="130" y2="315" stroke="#ffffff" strokeWidth="1.5" />
+          <path d="M136 295 L138 295 L141 370 L137 378 L133 370 Z" fill="#b91c1c" />
+          {/* Lapels */}
+          <path d="M120 288 L137 340 L130 345 Z" fill="#1e293b" />
+          <path d="M154 288 L137 340 L144 345 Z" fill="#1e293b" />
+          {/* Pocket Square */}
+          <rect x="116" y="315" width="14" height="4" fill="#ffffff" />
 
           {/* Left sleeve & arm (resting) */}
-          <path d="M118 290 L104 292 L94 330 L106 334 Z" fill="#00bbf9" />
-          <path d="M98 332 L98 360 L108 360 L104 334 Z" fill="#ffd1ac" />
+          {/* Hand peeking out (drawn first so cuff overlaps) */}
+          <path d="M96 358 C96 378, 110 378, 110 358 Z" fill="#ffd1ac" />
+          {/* Long suit sleeve */}
+          <path d="M118 290 L104 292 L96 358 L110 358 Z" fill="#0f172a" />
+          {/* White cuff */}
+          <path d="M96 358 L110 358 L108 364 L98 364 Z" fill="#ffffff" />
 
           {/* Welcoming Right sleeve & arm (points to chair) */}
           <g className="recruiter-arm">
-            <path d="M156 290 L170 286 L188 322 L172 326 Z" fill="#00bbf9" />
+            {/* Suit Sleeve */}
+            <path d="M156 290 L170 286 L188 322 L216 325 L216 333 L172 326 Z" fill="#0f172a" />
             {/* White cuff */}
-            <rect x="176" y="318" width="12" height="5" rx="1" fill="#ffffff" transform="rotate(20, 176, 318)" />
-            {/* Forearm */}
-            <path d="M180 322 L220 334 L216 344 L178 328 Z" fill="#ffd1ac" />
+            <path d="M216 325 L220 326 L220 334 L216 333 Z" fill="#ffffff" />
             {/* Welcoming hand */}
             <path d="M220 334 C226 335, 230 340, 235 336 C238 332, 235 327, 228 325 C225 324, 221 324, 220 326 Z" fill="#ffd1ac" />
           </g>
@@ -369,52 +372,54 @@ function Illustration({ onChairClick, activeView }) {
           {/* Candidate Shadow */}
           <ellipse cx="460" cy="532" rx="40" ry="10" fill="rgba(0, 0, 0, 0.2)" />
 
-          {/* Legs */}
+          {/* Formal Trousers */}
           {/* Left Leg */}
-          <path d="M442 400 L432 518" stroke="#1d4ed8" strokeWidth="15" strokeLinecap="round" />
+          <path d="M442 400 L432 518" stroke="#334155" strokeWidth="16" strokeLinecap="round" />
           {/* Right Leg */}
-          <path d="M470 400 L476 518" stroke="#1d4ed8" strokeWidth="15" strokeLinecap="round" />
+          <path d="M470 400 L476 518" stroke="#334155" strokeWidth="16" strokeLinecap="round" />
 
-          {/* Rips in jeans details */}
-          <line x1="434" y1="450" x2="446" y2="450" stroke="#ffffff" strokeWidth="2" />
-          <line x1="468" y1="468" x2="478" y2="468" stroke="#ffffff" strokeWidth="2" />
-
-          {/* Shoes - Green sneakers */}
+          {/* Shoes - Black Formal Flats */}
           {/* Left shoe */}
-          <path d="M432 516 L416 518 L410 527 L410 535 L436 535 L436 516 Z" fill="#0d9488" />
-          <path d="M408 531 H438 V535 H408 Z" fill="#ffffff" />
-          <circle cx="412" cy="529" r="4" fill="#ffffff" />
+          <path d="M432 516 L416 518 L410 530 L410 535 L436 535 L436 516 Z" fill="#0a0f1d" />
 
           {/* Right shoe */}
-          <path d="M476 516 L476 535 L500 535 L500 527 L494 518 L480 516 Z" fill="#0d9488" />
-          <path d="M474 531 H502 V535 H474 Z" fill="#ffffff" />
-          <circle cx="498" cy="529" r="4" fill="#ffffff" />
+          <path d="M476 516 L476 535 L500 535 L500 530 L494 518 L480 516 Z" fill="#0a0f1d" />
 
           {/* Pants Torso Joint */}
-          <path d="M432 390 L480 390 L484 415 L428 415 Z" fill="#1d4ed8" />
+          <path d="M432 390 L480 390 L484 415 L428 415 Z" fill="#334155" />
 
-          {/* Torso & White Top */}
-          <path d="M436 290 L476 290 L486 395 L426 395 Z" fill="#ffffff" />
-          <path d="M436 290 L476 290 L486 395 L426 395 Z" fill="none" stroke="#e2e8f0" strokeWidth="1" />
-          <path d="M448 290 Q456 298 464 290" fill="none" stroke="#cbd5e1" strokeWidth="2" />
+          {/* Torso & Professional Blazer */}
+          <path d="M436 290 L476 290 L486 395 L426 395 Z" fill="#334155" />
+          <path d="M450 290 L456 340 L462 290 Z" fill="#ffffff" />
+          <path d="M440 290 L456 340 L450 345 Z" fill="#475569" />
+          <path d="M472 290 L456 340 L462 345 Z" fill="#475569" />
 
           {/* Right arm & sleeve (casual gesture) */}
           <g className="candidate-arm">
-            <path d="M438 290 L426 292 L412 320 L422 324 Z" fill="#ffffff" />
-            <path d="M418 322 L400 338 L386 332 L402 316 Z" fill="#ffd1ac" />
+            {/* Blazer Sleeve */}
+            <path d="M438 290 L426 292 L412 320 L390 325 L390 331 L422 324 Z" fill="#334155" />
+            {/* White cuff */}
+            <path d="M390 325 L386 326 L386 332 L390 331 Z" fill="#ffffff" />
             {/* Gesture Hand */}
             <path d="M386 332 C380 332, 376 336, 372 334 C369 331, 372 326, 378 324 C381 323, 385 324, 386 326 Z" fill="#ffd1ac" />
           </g>
 
           {/* Left sleeve & arm holding folder */}
-          <path d="M474 290 L486 292 L498 330 L488 334 Z" fill="#ffffff" />
+          {/* Upper Arm */}
+          <path d="M474 290 L486 292 L498 330 L488 334 Z" fill="#334155" />
+          {/* Forearm Sleeve tucked behind folder */}
+          <path d="M498 330 L486 360 L482 368 L488 334 Z" fill="#334155" />
+          {/* White cuff behind folder */}
+          <path d="M486 360 L486 364 L482 371 L482 368 Z" fill="#ffffff" />
+
           {/* Folder Portfolio (brown) */}
           <path d="M476 328 L516 318 L532 370 L492 380 Z" fill="#78350f" rx="3" />
           <path d="M480 332 L514 324 L528 366 L494 374 Z" fill="#fafafa" />
           <line x1="486" y1="344" x2="510" y2="338" stroke="#cbd5e1" strokeWidth="1.5" />
           <line x1="488" y1="354" x2="512" y2="348" stroke="#cbd5e1" strokeWidth="1.5" />
           <line x1="490" y1="364" x2="514" y2="358" stroke="#cbd5e1" strokeWidth="1.5" />
-          {/* Hand clasping folder */}
+          
+          {/* Hand clasping folder in front */}
           <path d="M486 364 C490 364, 494 367, 494 371 C494 375, 488 375, 482 371 Z" fill="#ffd1ac" />
 
           {/* Head & Neck */}

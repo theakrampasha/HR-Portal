@@ -1,5 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, Form
 import os, shutil
+from datetime import datetime
 
 from app.services.resume_parser import (
     extract_text,
@@ -49,7 +50,8 @@ async def analyze_resumes(
             "name": name,
             "email": email,
             "phone": phone,
-            "score": score
+            "score": score,
+            "created_at": datetime.now().isoformat()
         })
 
     return {"candidates": results}

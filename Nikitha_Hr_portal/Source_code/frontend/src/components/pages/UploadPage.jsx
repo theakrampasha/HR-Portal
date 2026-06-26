@@ -193,6 +193,10 @@ export default function UploadPage() {
         `candidates_${currentJob.id}`,
         JSON.stringify(res.data.candidates)
       );
+      localStorage.setItem(
+        `reports_candidates_${currentJob.id}`,
+        JSON.stringify(res.data.candidates)
+      );
 
       localStorage.setItem("activeJobId", String(currentJob.id));
       localStorage.setItem("activeJob", currentJob.name); // legacy compat
@@ -727,9 +731,13 @@ export default function UploadPage() {
 
                   // Clean up all related localStorage data
                   localStorage.removeItem(`candidates_${deleteJobId}`);
+                  localStorage.removeItem(`reports_candidates_${deleteJobId}`);
+                  localStorage.removeItem(`reports_shortlisted_${deleteJobId}`);
                   localStorage.removeItem(`final_${deleteJobId}`);
                   if (jobToDelete) {
                     localStorage.removeItem(`candidates_${jobToDelete.name}`);
+                    localStorage.removeItem(`reports_candidates_${jobToDelete.name}`);
+                    localStorage.removeItem(`reports_shortlisted_${jobToDelete.name}`);
                     localStorage.removeItem(`final_${jobToDelete.name}`);
                   }
 

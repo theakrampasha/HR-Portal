@@ -109,4 +109,5 @@ def get_final():
 def reset_candidates():
     global candidates_db
     candidates_db = []
+    jobs_candidates_db.clear()
     return {"message": "All candidates cleared"}

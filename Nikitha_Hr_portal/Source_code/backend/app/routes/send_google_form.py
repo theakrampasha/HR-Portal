@@ -141,7 +141,22 @@ def send_google_form(data: FormRequest, x_user_email: str = Header(None)):
 @router.post("/reset-batch")
 def reset_batch(x_user_email: str = Header(None)):
     try:
-        clear_sent_emails()
-        return {"success": True, "message": "Batch reset. Ready for new candidates."}
+        import reset_data
+        from app.routes.candidates import candidates_db, jobs_candidates_db
+        
+        # 1. Truncate database tables
+        reset_data.clear_database()
+        
+        # 2. Clear uploaded resume files
+        reset_data.clear_uploads()
+        
+        # 3. Clear sent emails tracking file
+        reset_data.clear_sent_emails()
+        
+        # 4. Clear candidates in-memory store
+        candidates_db.clear()
+        jobs_candidates_db.clear()
+        
+        return {"success": True, "message": "Full application data reset completed successfully."}
     except Exception as e:
         return {"success": False, "error": str(e)}

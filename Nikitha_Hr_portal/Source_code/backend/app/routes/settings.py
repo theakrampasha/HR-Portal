@@ -422,4 +422,54 @@ def get_gemini_settings(x_user_email: str = Header(None)):
             "api_key_saved": bool(api_key)
         }
     except Exception as e:
-        raise HTTPException(500, str(e))
+        raise HTTPException(500, str(e))
+
+
+@router.post("/system/reset")
+def system_reset():
+    try:
+        # 1. Clear database tables
+        from app.database.db import get_connection
+        conn = get_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")
+        tables = ["candidate_history", "rejected_history", "recruitment_funnel_stats"]
+        for table in tables:
+            try:
+                cursor.execute(f"TRUNCATE TABLE {table};")
+            except Exception as ex:
+                print(f"Failed to truncate {table}: {ex}")
+        cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        # 2. Clear uploads
+        import shutil
+        uploads_dir = "uploads"
+        if os.path.exists(uploads_dir):
+            for filename in os.listdir(uploads_dir):
+                file_path = os.path.join(uploads_dir, filename)
+                try:
+                    if os.path.isfile(file_path) or os.path.islink(file_path):
+                        os.unlink(file_path)
+                    elif os.path.isdir(file_path):
+                        shutil.rmtree(file_path)
+                except Exception:
+                    pass
+
+        # 3. Clear sent emails
+        sent_emails_file = "sent_emails.json"
+        if os.path.exists(sent_emails_file):
+            with open(sent_emails_file, "w") as f:
+                json.dump({"emails": [], "candidates": []}, f, indent=4)
+
+        # 4. Clear uvicorn in-memory candidates
+        from app.routes.candidates import candidates_db, jobs_candidates_db
+        candidates_db.clear()
+        jobs_candidates_db.clear()
+
+        return {"success": True, "message": "System reset completed successfully"}
+    except Exception as e:
+        raise HTTPException(500, f"Reset failed: {str(e)}")
