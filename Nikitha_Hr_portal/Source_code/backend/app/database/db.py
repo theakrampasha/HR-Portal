@@ -9,6 +9,7 @@ except ImportError:
     pass
 
 DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = int(os.getenv("DB_PORT", "3306"))
 DB_USER = os.getenv("DB_USER", "root")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "m@niharini2529")
 DB_NAME = os.getenv("DB_NAME", "hr_ai_db")
@@ -17,6 +18,7 @@ DB_NAME = os.getenv("DB_NAME", "hr_ai_db")
 def get_connection():
     return mysql.connector.connect(
         host=DB_HOST,
+        port=DB_PORT,
         user=DB_USER,
         password=DB_PASSWORD,
         database=DB_NAME,
@@ -27,6 +29,7 @@ def _server_connection():
     """Connect without selecting a database (for CREATE DATABASE)."""
     return mysql.connector.connect(
         host=DB_HOST,
+        port=DB_PORT,
         user=DB_USER,
         password=DB_PASSWORD,
     )
@@ -45,6 +48,7 @@ def init_db():
 
     conn = get_connection()
     cursor = conn.cursor(buffered=True)
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS candidate_history (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -100,7 +104,7 @@ def init_db():
         )
     """)
 
-    # Ensure users table exists and seed default user
+    # Ensure users table exists
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             Name VARCHAR(255),
@@ -132,12 +136,12 @@ def init_db():
             "ADD COLUMN gemini_api_key VARCHAR(255) DEFAULT ''"
         )
     except Error as e:
-        if e.errno != 1060:  # 1060: Duplicate column name
+        if e.errno != 1060:
             raise
-
 
     cursor.execute("SELECT COUNT(*) FROM users")
     count = cursor.fetchone()[0]
+
     if count == 0:
         cursor.execute(
             "INSERT INTO users (Name, Email, password) VALUES (%s, %s, %s)",
@@ -147,4 +151,3 @@ def init_db():
     conn.commit()
     cursor.close()
     conn.close()
-
