@@ -1,11 +1,12 @@
-import { useState } from 'react'
-import Illustration from './Illustration'
-import InputField from './InputField'
+import { useState } from "react";
+import Illustration from "./Illustration";
+import InputField from "./InputField";
 
-function LoginPage({ onSwitchToSignUp }) {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
+function LoginPage({ onLoginSuccess, onSwitchToSignUp }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -22,8 +23,8 @@ function LoginPage({ onSwitchToSignUp }) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email: email,
-            password: password,
+            email,
+            password,
           }),
         }
       );
@@ -36,36 +37,42 @@ function LoginPage({ onSwitchToSignUp }) {
         return;
       }
 
-      // Save login details
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("username", data.username);
-      localStorage.setItem("email", data.gmail);
+      // Save user information
+      localStorage.setItem("token", data.token || "");
+      localStorage.setItem("username", data.username || "");
+      localStorage.setItem("email", data.gmail || email);
+      localStorage.setItem("isLoggedIn", "true");
 
       alert(`Welcome ${data.username}!`);
 
-      // Redirect to your home page
-      window.location.href = "/";
-
-    } catch (error) {
-      console.error("Login Error:", error);
-      alert("Unable to connect to the server.");
+      // Redirect
+// Notify App.jsx that login succeeded
+onLoginSuccess();
+   } catch (error) {
+      console.error(error);
+      alert("Unable to connect to server.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
+
   const handleChairClick = () => {
-    onSwitchToSignUp()
-  }
+    onSwitchToSignUp();
+  };
 
   return (
     <div className="auth-page">
       <div className="auth-left">
-        <Illustration onChairClick={handleChairClick} activeView="login" />
+        <Illustration
+          onChairClick={handleChairClick}
+          activeView="login"
+        />
       </div>
 
       <div className="auth-right">
         <div className="auth-form-container">
           <h1 className="auth-title">Welcome back</h1>
+
           <p className="auth-subtitle">
             Enter your credentials to access the HR hiring portal.
           </p>
@@ -94,24 +101,35 @@ function LoginPage({ onSwitchToSignUp }) {
                 <input type="checkbox" />
                 <span>Remember me</span>
               </label>
-              <a href="#" className="auth-link">Forgot password?</a>
+
+              <a href="#" className="auth-link">
+                Forgot password?
+              </a>
             </div>
 
-            <button type="submit" className="auth-button" disabled={loading || !email || !password}>
-              {loading ? 'Logging in...' : 'Log in'}
+            <button
+              type="submit"
+              className="auth-button"
+              disabled={loading || !email || !password}
+            >
+              {loading ? "Logging in..." : "Log in"}
             </button>
           </form>
 
           <p className="auth-switch">
-            Don&apos;t have an account?{' '}
-            <button type="button" className="auth-link-btn" onClick={onSwitchToSignUp}>
+            Don't have an account?{" "}
+            <button
+              type="button"
+              className="auth-link-btn"
+              onClick={onSwitchToSignUp}
+            >
               Create account
             </button>
           </p>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default LoginPage
+export default LoginPage;

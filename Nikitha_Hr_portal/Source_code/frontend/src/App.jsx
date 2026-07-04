@@ -80,13 +80,13 @@ function App() {
           }}
         />
         {authView === "login" ? (
-          <LoginPage 
-            onLoginSuccess={() => setIsAuthenticated(true)} 
-            onSwitchToSignUp={() => setAuthView("signup")} 
+          <LoginPage
+            onLoginSuccess={() => setIsAuthenticated(true)}
+            onSwitchToSignUp={() => setAuthView("signup")}
           />
         ) : (
-          <SignUpPage 
-            onSwitchToLogin={() => setAuthView("login")} 
+          <SignUpPage
+            onSwitchToLogin={() => setAuthView("login")}
           />
         )}
       </Router>
