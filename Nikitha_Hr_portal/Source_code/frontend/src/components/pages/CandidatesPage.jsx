@@ -52,7 +52,7 @@ export default function CandidatesPage() {
   const [showFilters, setShowFilters] = useState(false);
   const activeJob = localStorage.getItem("activeJobId") || "";
   const dedupeByEmail = (list) => {
-  
+
     const seen = new Set();
     return list.filter((c) => {
       const email = (c.email || "").toLowerCase().trim();
@@ -88,7 +88,7 @@ export default function CandidatesPage() {
           : String(val).trim();
 
       // Load shortlisted to get resume ATS scores
-      const shortlisted =JSON.parse(localStorage.getItem(`shortlistedCandidates_${activeJob}`)) || [];
+      const shortlisted = JSON.parse(localStorage.getItem(`shortlistedCandidates_${activeJob}`)) || [];
 
       const data = raw.map((c) => {
         // Find the matching shortlisted candidate by email
@@ -159,46 +159,46 @@ export default function CandidatesPage() {
   // =========================================
   useEffect(() => {
     const activeJob =
-  localStorage.getItem("activeJobId") || "";
+      localStorage.getItem("activeJobId") || "";
 
-const stored = JSON.parse(
-  localStorage.getItem(
-    `candidates_${activeJob}`
-  )
-) || [];
+    const stored = JSON.parse(
+      localStorage.getItem(
+        `candidates_${activeJob}`
+      )
+    ) || [];
     const data = stored.map((c) => ({ ...c, selected: false }));
     setCandidates(data);
 
     const currentBatch = JSON.stringify(data.map((c) => c.email));
     const savedBatch = localStorage.getItem(
-  `candidateBatch_${activeJob}`
-);
+      `candidateBatch_${activeJob}`
+    );
 
     // NEW BATCH
     if (currentBatch && currentBatch !== "[]" && currentBatch !== savedBatch) {
       setShowATSModal(true);
       localStorage.setItem(
-  `candidateBatch_${activeJob}`,
-  currentBatch
-);
+        `candidateBatch_${activeJob}`,
+        currentBatch
+      );
       localStorage.removeItem(
-  `shortlistedCandidates_${activeJob}`
-);
+        `shortlistedCandidates_${activeJob}`
+      );
       localStorage.removeItem(
-  `closeTime_${activeJob}`
-);
+        `closeTime_${activeJob}`
+      );
       localStorage.removeItem(
-  `googleFormCompleted_${activeJob}`
-);
+        `googleFormCompleted_${activeJob}`
+      );
     }
     // EXISTING BATCH — restore previous state
     else {
       const shortlisted =
-  JSON.parse(
-    localStorage.getItem(
-      `shortlistedCandidates_${activeJob}`
-    )
-  ) || [];
+        JSON.parse(
+          localStorage.getItem(
+            `shortlistedCandidates_${activeJob}`
+          )
+        ) || [];
       setShortlistedCandidates(shortlisted);
 
       const savedCloseTime = localStorage.getItem(`closeTime_${activeJob}`);
@@ -225,7 +225,7 @@ const stored = JSON.parse(
       (c) => Number(c.score) >= Number(minATS)
     );
     setShortlistedCandidates(filtered);
-    localStorage.setItem(`shortlistedCandidates_${activeJob}`,JSON.stringify(filtered));
+    localStorage.setItem(`shortlistedCandidates_${activeJob}`, JSON.stringify(filtered));
     localStorage.setItem(`reports_shortlisted_${activeJob}`, JSON.stringify(filtered));
     setShowATSModal(false);
     toast.success(`${filtered.length} candidates shortlisted`);
@@ -450,7 +450,10 @@ const stored = JSON.parse(
       toast.error("Resume not found");
       return;
     }
-    window.open(`http://localhost:8000/uploads/${file}`, "_blank");
+    window.open(
+      `https://vivacious-perfection-production-4c2d.up.railway.app/uploads/${file}`,
+      "_blank"
+    );
   };
 
   // =========================================
