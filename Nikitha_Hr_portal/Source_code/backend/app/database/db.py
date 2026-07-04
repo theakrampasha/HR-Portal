@@ -105,13 +105,15 @@ def init_db():
     """)
 
     # Ensure users table exists
+  # Ensure users table exists and seed default user
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            Name VARCHAR(255),
-            Email VARCHAR(255) UNIQUE,
-            password VARCHAR(255)
-        )
-    """)
+    CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        Name VARCHAR(255) NOT NULL,
+        Email VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL
+    )
+""")
 
     # Ensure user_settings table exists
     cursor.execute("""
