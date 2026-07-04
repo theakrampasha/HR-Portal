@@ -6,18 +6,53 @@ function LoginPage({ onSwitchToSignUp }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (!email || !password) return
-    setLoading(true)
-    setTimeout(() => {
-      console.log('Login:', { email, password })
-      alert(`Successfully logged in with: ${email}`)
-      setLoading(false)
-    }, 1200)
-  }
+    if (!email || !password) return;
 
+    setLoading(true);
+
+    try {
+      const response = await fetch(
+        "https://vivacious-perfection-production-4c2d.up.railway.app/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.detail || "Invalid email or password");
+        setLoading(false);
+        return;
+      }
+
+      // Save login details
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("username", data.username);
+      localStorage.setItem("email", data.gmail);
+
+      alert(`Welcome ${data.username}!`);
+
+      // Redirect to your home page
+      window.location.href = "/";
+
+    } catch (error) {
+      console.error("Login Error:", error);
+      alert("Unable to connect to the server.");
+    }
+
+    setLoading(false);
+  };
   const handleChairClick = () => {
     onSwitchToSignUp()
   }
